@@ -61,16 +61,35 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandHandlers.cs" />
-    <Compile Include="Domain.cs" />
+    <Compile Include="AggregateNotFoundException.cs" />
+    <Compile Include="InventoryItemCheckInCommand.cs" />
+    <Compile Include="ConcurrencyException.cs" />
+    <Compile Include="InventoryItemCreateCommand.cs" />
+    <Compile Include="InventoryItemDeactivateCommand.cs" />
+    <Compile Include="DelegateAdjuster.cs" />
     <Compile Include="EventStore.cs" />
     <Compile Include="FakeBus.cs" />
-    <Compile Include="InfrastructureCrap.DontBotherReadingItsNotImportant.cs" />
+    <Compile Include="IAggregateRoot.cs" />
+    <Compile Include="ICommand.cs" />
+    <Compile Include="ICommandSender.cs" />
+    <Compile Include="IEvent.cs" />
+    <Compile Include="IEventPublisher.cs" />
+    <Compile Include="IEventStore.cs" />
+    <Compile Include="IHandle.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Commands.cs" />
-    <Compile Include="Events.cs" />
-    <Compile Include="Message.cs" />
+    <Compile Include="IMessage.cs" />
+    <Compile Include="InventoryItemAggregateRoot.cs" />
+    <Compile Include="InventoryItemCommandHandlers.cs" />
+    <Compile Include="InventoryItemCreatedEvent.cs" />
+    <Compile Include="InventoryItemDeactivatedEvent.cs" />
+    <Compile Include="InventoryItemRenamedEvent.cs" />
+    <Compile Include="IRepository.cs" />
+    <Compile Include="InventoryItemCheckedInEvent.cs" />
+    <Compile Include="InventoryItemRemovedEvent.cs" />
     <Compile Include="ReadModel.cs" />
+    <Compile Include="InventoryItemRemoveCommand.cs" />
+    <Compile Include="InventoryItemRenameCommand.cs" />
+    <Compile Include="Repository.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

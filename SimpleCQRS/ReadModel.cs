@@ -11,15 +11,15 @@ namespace SimpleCQRS
 
     public class InventoryItemDetailsDto
     {
+        public int CurrentCount;
         public Guid Id;
         public string Name;
-        public int CurrentCount;
         public int Version;
 
         public InventoryItemDetailsDto(Guid id, string name, int currentCount, int version)
         {
-			Id = id;
-			Name = name;
+            Id = id;
+            Name = name;
             CurrentCount = currentCount;
             Version = version;
         }
@@ -37,66 +37,71 @@ namespace SimpleCQRS
         }
     }
 
-    public class InventoryListView : Handles<InventoryItemCreated>, Handles<InventoryItemRenamed>, Handles<InventoryItemDeactivated>
+    public class InventoryListView
+        : IHandle<InventoryItemCreatedEvent>, IHandle<InventoryItemRenamedEvent>,
+          IHandle<InventoryItemDeactivatedEvent>
     {
-        public void Handle(InventoryItemCreated message)
+        public void Handle(InventoryItemCreatedEvent message)
         {
-            BullShitDatabase.list.Add(new InventoryItemListDto(message.Id, message.Name));
+            SimpleInMemoryDatabase.List.Add(new InventoryItemListDto(message.Id, message.Name));
         }
 
-        public void Handle(InventoryItemRenamed message)
+        public void Handle(InventoryItemDeactivatedEvent message)
         {
-            var item = BullShitDatabase.list.Find(x => x.Id == message.Id);
+            SimpleInMemoryDatabase.List.RemoveAll(x => x.Id == message.Id);
+        }
+
+        public void Handle(InventoryItemRenamedEvent message)
+        {
+            var item = SimpleInMemoryDatabase.List.Find(x => x.Id == message.Id);
             item.Name = message.NewName;
-        }
-
-        public void Handle(InventoryItemDeactivated message)
-        {
-            BullShitDatabase.list.RemoveAll(x => x.Id == message.Id);
         }
     }
 
-    public class InvenotryItemDetailView : Handles<InventoryItemCreated>, Handles<InventoryItemDeactivated>, Handles<InventoryItemRenamed>, Handles<ItemsRemovedFromInventory>, Handles<ItemsCheckedInToInventory>
+    public class InventoryItemDetailView
+        : IHandle<InventoryItemCreatedEvent>, IHandle<InventoryItemDeactivatedEvent>,
+          IHandle<InventoryItemRenamedEvent>, IHandle<InventoryItemRemovedEvent>,
+          IHandle<InventoryItemCheckedInEvent>
     {
-        public void Handle(InventoryItemCreated message)
+        public void Handle(InventoryItemCheckedInEvent message)
         {
-            BullShitDatabase.details.Add(message.Id, new InventoryItemDetailsDto(message.Id, message.Name, 0,0));
+            var d = GetDetailsItem(message.Id);
+            d.CurrentCount += message.Count;
+            d.Version = message.Revision;
         }
 
-        public void Handle(InventoryItemRenamed message)
+        public void Handle(InventoryItemCreatedEvent message)
         {
-            InventoryItemDetailsDto d = GetDetailsItem(message.Id);
+            SimpleInMemoryDatabase.Details.Add(message.Id, new InventoryItemDetailsDto(message.Id, message.Name, 0, 0));
+        }
+
+        public void Handle(InventoryItemDeactivatedEvent message)
+        {
+            SimpleInMemoryDatabase.Details.Remove(message.Id);
+        }
+
+        public void Handle(InventoryItemRemovedEvent message)
+        {
+            var d = GetDetailsItem(message.Id);
+            d.CurrentCount -= message.Count;
+            d.Version = message.Revision;
+        }
+
+        public void Handle(InventoryItemRenamedEvent message)
+        {
+            var d = GetDetailsItem(message.Id);
             d.Name = message.NewName;
-            d.Version = message.Version;
+            d.Version = message.Revision;
         }
 
-        private InventoryItemDetailsDto GetDetailsItem(Guid id)
+        private static InventoryItemDetailsDto GetDetailsItem(Guid id)
         {
             InventoryItemDetailsDto d;
-            if(!BullShitDatabase.details.TryGetValue(id, out d))
+            if (!SimpleInMemoryDatabase.Details.TryGetValue(id, out d))
             {
                 throw new InvalidOperationException("did not find the original inventory this shouldnt happen");
             }
             return d;
-        }
-
-        public void Handle(ItemsRemovedFromInventory message)
-        {
-            InventoryItemDetailsDto d = GetDetailsItem(message.Id);
-            d.CurrentCount -= message.Count;
-            d.Version = message.Version;
-        }
-
-        public void Handle(ItemsCheckedInToInventory message)
-        {
-            InventoryItemDetailsDto d = GetDetailsItem(message.Id);
-            d.CurrentCount += message.Count;
-            d.Version = message.Version;
-        }
-
-        public void Handle(InventoryItemDeactivated message)
-        {
-            BullShitDatabase.details.Remove(message.Id);
         }
     }
 
@@ -104,18 +109,20 @@ namespace SimpleCQRS
     {
         public IEnumerable<InventoryItemListDto> GetInventoryItems()
         {
-            return BullShitDatabase.list;
+            return SimpleInMemoryDatabase.List;
         }
 
         public InventoryItemDetailsDto GetInventoryItemDetails(Guid id)
         {
-            return BullShitDatabase.details[id];
+            return SimpleInMemoryDatabase.Details[id];
         }
     }
 
-    public static class BullShitDatabase 
+    public static class SimpleInMemoryDatabase
     {
-        public static Dictionary<Guid, InventoryItemDetailsDto> details = new Dictionary<Guid,InventoryItemDetailsDto>();
-        public static List<InventoryItemListDto> list = new List<InventoryItemListDto>();
+        public static readonly Dictionary<Guid, InventoryItemDetailsDto> Details =
+            new Dictionary<Guid, InventoryItemDetailsDto>();
+
+        public static readonly List<InventoryItemListDto> List = new List<InventoryItemListDto>();
     }
 }

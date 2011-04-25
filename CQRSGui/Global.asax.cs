@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SimpleCQRS;
@@ -11,18 +8,17 @@ namespace CQRSGui
     // Note: For instructions on enabling IIS6 or IIS7 classic mode, 
     // visit http://go.microsoft.com/?LinkId=9394801
 
-    public class MvcApplication : System.Web.HttpApplication
+    public class MvcApplication : HttpApplication
     {
-        public static void RegisterRoutes(RouteCollection routes)
+        private static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
                 "Default", // Route name
                 "{controller}/{action}/{id}", // URL with parameters
-                new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults
-            );
-
+                new {controller = "Home", action = "Index", id = UrlParameter.Optional} // Parameter defaults
+                );
         }
 
         protected void Application_Start()
@@ -34,23 +30,23 @@ namespace CQRSGui
             var bus = new FakeBus();
 
             var storage = new EventStore(bus);
-            var rep = new Repository<InventoryItem>(storage);
-            var commands = new InventoryCommandHandlers(rep);
-            bus.RegisterHandler<CheckInItemsToInventory>(commands.Handle);
-            bus.RegisterHandler<CreateInventoryItem>(commands.Handle);
-            bus.RegisterHandler<DeactivateInventoryItem>(commands.Handle);
-            bus.RegisterHandler<RemoveItemsFromInventory>(commands.Handle);
-            bus.RegisterHandler<RenameInventoryItem>(commands.Handle);
-            var detail = new InvenotryItemDetailView();
-            bus.RegisterHandler<InventoryItemCreated>(detail.Handle);
-            bus.RegisterHandler<InventoryItemDeactivated>(detail.Handle);
-            bus.RegisterHandler<InventoryItemRenamed>(detail.Handle);
-            bus.RegisterHandler<ItemsCheckedInToInventory>(detail.Handle);
-            bus.RegisterHandler<ItemsRemovedFromInventory>(detail.Handle);
+            var rep = new Repository<InventoryItemAggregateRoot>(storage);
+            var commands = new InventoryItemCommandHandlers(rep);
+            bus.RegisterHandler<InventoryItemCheckInCommand>(commands.Handle);
+            bus.RegisterHandler<InventoryItemCreateCommand>(commands.Handle);
+            bus.RegisterHandler<InventoryItemDeactivateCommand>(commands.Handle);
+            bus.RegisterHandler<InventoryItemRemoveCommand>(commands.Handle);
+            bus.RegisterHandler<InventoryItemRenameCommand>(commands.Handle);
+            var detail = new InventoryItemDetailView();
+            bus.RegisterHandler<InventoryItemCreatedEvent>(detail.Handle);
+            bus.RegisterHandler<InventoryItemDeactivatedEvent>(detail.Handle);
+            bus.RegisterHandler<InventoryItemRenamedEvent>(detail.Handle);
+            bus.RegisterHandler<InventoryItemCheckedInEvent>(detail.Handle);
+            bus.RegisterHandler<InventoryItemRemovedEvent>(detail.Handle);
             var list = new InventoryListView();
-            bus.RegisterHandler<InventoryItemCreated>(list.Handle);
-            bus.RegisterHandler<InventoryItemRenamed>(list.Handle);
-            bus.RegisterHandler<InventoryItemDeactivated>(list.Handle);
+            bus.RegisterHandler<InventoryItemCreatedEvent>(list.Handle);
+            bus.RegisterHandler<InventoryItemRenamedEvent>(list.Handle);
+            bus.RegisterHandler<InventoryItemDeactivatedEvent>(list.Handle);
             ServiceLocator.Bus = bus;
         }
     }

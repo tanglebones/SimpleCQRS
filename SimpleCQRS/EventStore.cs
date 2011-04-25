@@ -4,12 +4,6 @@ using System.Linq;
 
 namespace SimpleCQRS
 {
-    public interface IEventStore
-    {
-        void SaveEvents(Guid aggregateId, IEnumerable<Event> events, int expectedVersion);
-        List<Event> GetEventsForAggregate(Guid aggregateId);
-    }
-
     public class EventStore : IEventStore
     {
         private readonly IEventPublisher _publisher;
@@ -17,14 +11,14 @@ namespace SimpleCQRS
         private struct EventDescriptor
         {
             
-            public readonly Event EventData;
+            public readonly IEvent EventData;
             public readonly Guid Id;
-            public readonly int Version;
+            public readonly int Revision;
 
-            public EventDescriptor(Guid id, Event eventData, int version)
+            public EventDescriptor(Guid id, IEvent eventData, int revision)
             {
                 EventData = eventData;
-                Version = version;
+                Revision = revision;
                 Id = id;
             }
         }
@@ -36,7 +30,7 @@ namespace SimpleCQRS
 
         private readonly Dictionary<Guid, List<EventDescriptor>> _current = new Dictionary<Guid, List<EventDescriptor>>(); 
         
-        public void SaveEvents(Guid aggregateId, IEnumerable<Event> events, int expectedVersion)
+        public void SaveEvents(Guid aggregateId, IEnumerable<IEvent> events, int expectedRevision)
         {
             List<EventDescriptor> eventDescriptors;
             if(!_current.TryGetValue(aggregateId, out eventDescriptors))
@@ -44,21 +38,21 @@ namespace SimpleCQRS
                 eventDescriptors = new List<EventDescriptor>();
                 _current.Add(aggregateId,eventDescriptors);
             }
-            else if(eventDescriptors[eventDescriptors.Count - 1].Version != expectedVersion && expectedVersion != -1)
+            else if(eventDescriptors[eventDescriptors.Count - 1].Revision != expectedRevision && expectedRevision != -1)
             {
                 throw new ConcurrencyException();
             }
-            var i = expectedVersion;
+            var i = expectedRevision;
             foreach (var @event in events)
             {
                 i++;
-                @event.Version = i;
+                @event.Revision = i;
                 eventDescriptors.Add(new EventDescriptor(aggregateId,@event,i));
                 _publisher.Publish(@event);
             }
         }
 
-        public  List<Event> GetEventsForAggregate(Guid aggregateId)
+        public  IEnumerable<IEvent> GetEventsForAggregate(Guid aggregateId)
         {
             List<EventDescriptor> eventDescriptors;
             if (!_current.TryGetValue(aggregateId, out eventDescriptors))
@@ -67,10 +61,6 @@ namespace SimpleCQRS
             }
             return eventDescriptors.Select(desc => desc.EventData).ToList();
         }
-    }
-
-    public class AggregateNotFoundException : Exception
-    {
     }
 
     public class ConcurrencyException : Exception
