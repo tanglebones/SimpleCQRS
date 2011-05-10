@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace SimpleCQRS
 {
-    public class FakeBus : ICommandSender, IEventPublisher
+    public class FakeBus : IBus
     {
         private readonly Dictionary<Type, List<Action<IMessage>>> _routes = new Dictionary<Type, List<Action<IMessage>>>();
 

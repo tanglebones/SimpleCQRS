@@ -1,7 +1,9 @@
-﻿namespace SimpleCQRS
+﻿using System;
+
+namespace SimpleCQRS
 {
     public interface ICommandSender
     {
-        void Send<T>(T command) where T : ICommand;
+        void Send<T>(T command) where T: ICommand;
     }
 }

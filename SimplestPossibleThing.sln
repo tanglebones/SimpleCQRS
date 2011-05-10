@@ -5,6 +5,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleCQRS", "SimpleCQRS\Si
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CQRSGui", "CQRSGui\CQRSGui.csproj", "{29ECBF37-9526-4CB6-8429-D09CF0301C26}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A4A75228-3B08-4491-9A73-8E5E7FFDF0E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuidEx", "GuidEx\GuidEx.csproj", "{C4809AD7-896C-40EC-88B0-E1EEAEDDE075}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +39,16 @@ Global
 		{29ECBF37-9526-4CB6-8429-D09CF0301C26}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{29ECBF37-9526-4CB6-8429-D09CF0301C26}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{29ECBF37-9526-4CB6-8429-D09CF0301C26}.Release|x86.ActiveCfg = Release|Any CPU
+		{C4809AD7-896C-40EC-88B0-E1EEAEDDE075}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4809AD7-896C-40EC-88B0-E1EEAEDDE075}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4809AD7-896C-40EC-88B0-E1EEAEDDE075}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C4809AD7-896C-40EC-88B0-E1EEAEDDE075}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C4809AD7-896C-40EC-88B0-E1EEAEDDE075}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C4809AD7-896C-40EC-88B0-E1EEAEDDE075}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4809AD7-896C-40EC-88B0-E1EEAEDDE075}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4809AD7-896C-40EC-88B0-E1EEAEDDE075}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C4809AD7-896C-40EC-88B0-E1EEAEDDE075}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C4809AD7-896C-40EC-88B0-E1EEAEDDE075}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
