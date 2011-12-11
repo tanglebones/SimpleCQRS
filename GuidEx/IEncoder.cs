@@ -4,7 +4,7 @@ namespace GuidEx
 {
     public interface IEncoder
     {
-        string Encode(byte[] plain);
+        string Encode(IEnumerable<byte> plain);
         IEnumerable<byte> Decode(string encoded);
     }
 }

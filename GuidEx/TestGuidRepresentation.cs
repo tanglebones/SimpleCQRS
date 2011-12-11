@@ -13,9 +13,9 @@ namespace GuidEx
         {
             var g = Guid.Empty;
             var s = GuidRepresentation.ToCompactString(g);
-            Assert.IsTrue(s.ToCharArray().All(c => c == '0'));
+            Assert.That(s, Is.EqualTo("AAAAAAAAAAAAAAAAAAAAAAZdZd"));
             var g1 = GuidRepresentation.FromCompactString(s);
-            Assert.AreEqual(g, g1);
+            Assert.That(g, Is.EqualTo(g1));
         }
 
         [Test]
@@ -33,7 +33,7 @@ namespace GuidEx
             var g = new Guid(new byte[] {255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255});
             var s = GuidRepresentation.ToCompactString(g);
             var g1 = GuidRepresentation.FromCompactString(s);
-            Assert.AreEqual(g, g1);
+            Assert.That(g, Is.EqualTo(g1));
         }
 
         [Test]
@@ -42,7 +42,7 @@ namespace GuidEx
             var g = new Guid(new byte[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
             var s = GuidRepresentation.ToCompactString(g);
             var g1 = GuidRepresentation.FromCompactString(s);
-            Assert.AreEqual(g, g1);
+            Assert.That(g, Is.EqualTo(g1));
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace GuidEx
                 total += length;
                 if (length > max) max = length;
                 var g1 = GuidRepresentation.FromCompactString(s);
-                Assert.AreEqual(g, g1);
+                Assert.That(g, Is.EqualTo(g1));
             }
             var avg = ((double) total)/count;
             Debug.WriteLine("avg length: " + avg);
